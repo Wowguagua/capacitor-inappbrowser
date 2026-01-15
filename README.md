@@ -55,8 +55,9 @@ openInAppBrowser(options: OpenInAppBrowserOptions) => Promise<void>
 
 #### OpenInAppBrowserOptions
 
-| Prop      | Type                |
-| --------- | ------------------- |
-| **`url`** | <code>string</code> |
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`url`**   | <code>string</code> |
+| **`title`** | <code>string</code> |
 
 </docgen-api>
