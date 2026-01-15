@@ -49,9 +49,23 @@
             android:background="?android:attr/selectableItemBackgroundBorderless" />
     </FrameLayout>
 
-    <WebView
-        android:id="@+id/in_app_browser_webview"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/in_app_browser_webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ProgressBar
+            android:id="@+id/in_app_browser_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            android:max="100" />
+    </FrameLayout>
 </LinearLayout>
