@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/in_app_browser_header_container"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@android:color/white"
+        android:paddingHorizontal="20dp">
+
+        <TextView
+            android:id="@+id/in_app_browser_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:fontFamily="Noto Sans TC"
+            android:textStyle="normal"
+            android:textFontWeight="500"
+            android:lineHeight="24sp"
+            android:textColor="#242828"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="In-App Browser"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/in_app_browser_close"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/ic_in_app_browser_close"
+            android:contentDescription="@string/in_app_browser_close"
+            android:background="?android:attr/selectableItemBackgroundBorderless" />
+    </FrameLayout>
+
+    <WebView
+        android:id="@+id/in_app_browser_webview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

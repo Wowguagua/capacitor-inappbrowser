@@ -19,4 +19,16 @@ public class InAppBrowserPlugin extends Plugin {
         ret.put("value", implementation.echo(value));
         call.resolve(ret);
     }
+
+    @PluginMethod
+    public void openInAppBrowser(PluginCall call) {
+        String url = call.getString("url");
+        String title = call.getString("title");
+        if (url == null || url.trim().isEmpty()) {
+            call.reject("Must provide a url");
+            return;
+        }
+        implementation.openInAppBrowser(getContext(), url, title);
+        call.resolve();
+    }
 }

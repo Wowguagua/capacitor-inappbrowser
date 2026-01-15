@@ -1,2 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="com.wowguagua.plugin.inappbrower.InAppBrowserActivity"
+            android:exported="false" />
+    </application>
 </manifest>

@@ -14,6 +14,8 @@ npx cap sync
 <docgen-index>
 
 * [`echo(...)`](#echo)
+* [`openInAppBrowser(...)`](#openinappbrowser)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -33,5 +35,28 @@ echo(options: { value: string; }) => Promise<{ value: string; }>
 **Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
 
 --------------------
+
+
+### openInAppBrowser(...)
+
+```typescript
+openInAppBrowser(options: OpenInAppBrowserOptions) => Promise<void>
+```
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#openinappbrowseroptions">OpenInAppBrowserOptions</a></code> |
+
+--------------------
+
+
+### Interfaces
+
+
+#### OpenInAppBrowserOptions
+
+| Prop      | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
 
 </docgen-api>
