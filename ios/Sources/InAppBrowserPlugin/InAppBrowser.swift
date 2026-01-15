@@ -24,13 +24,15 @@ import WebKit
     }
 }
 
-final class InAppBrowserViewController: UIViewController, WKNavigationDelegate {
+final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     private static let textColor = UIColor(red: 36.0 / 255.0, green: 40.0 / 255.0, blue: 40.0 / 255.0, alpha: 1)
     private let url: URL
     private let titleText: String
     private let webView = WKWebView(frame: .zero)
     private let backButton = UIButton(type: .system)
     private var canGoBackObservation: NSKeyValueObservation?
+    private let progressView = UIProgressView(progressViewStyle: .bar)
+    private var progressObservation: NSKeyValueObservation?
 
     init(url: URL, titleText: String) {
         self.url = url
@@ -80,6 +82,7 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate {
         webView.backgroundColor = .white
         webView.translatesAutoresizingMaskIntoConstraints = false
         webView.navigationDelegate = self
+        webView.uiDelegate = self
         canGoBackObservation = webView.observe(\.canGoBack, options: [.initial, .new]) { [weak self] _, _ in
             self?.updateBackButtonVisibility()
         }
@@ -88,10 +91,19 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate {
             webView.scrollView.contentInsetAdjustmentBehavior = .never
         }
 
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.trackTintColor = .clear
+        progressView.progress = 0
+        progressView.isHidden = true
+        progressObservation = webView.observe(\.estimatedProgress, options: [.new]) { [weak self] webView, _ in
+            self?.updateProgress(Float(webView.estimatedProgress))
+        }
+
         view.addSubview(headerView)
         headerView.addSubview(titleLabel)
         headerView.addSubview(backButton)
         headerView.addSubview(closeButton)
+        view.addSubview(progressView)
         view.addSubview(webView)
 
         NSLayoutConstraint.activate([
@@ -115,7 +127,12 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate {
             titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 12),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -12),
 
-            webView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            progressView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            progressView.heightAnchor.constraint(equalToConstant: 2),
+
+            webView.topAnchor.constraint(equalTo: progressView.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -137,6 +154,32 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate {
 
     private func updateBackButtonVisibility() {
         backButton.isHidden = !webView.canGoBack
+    }
+
+    private func updateProgress(_ progress: Float) {
+        if progress >= 1.0 {
+            progressView.setProgress(1.0, animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.progressView.isHidden = true
+                self?.progressView.progress = 0
+            }
+        } else {
+            if progressView.isHidden {
+                progressView.isHidden = false
+            }
+            progressView.setProgress(progress, animated: true)
+        }
+    }
+
+    // Open new window requests in the same webview.
+    func webView(_ webView: WKWebView,
+                 createWebViewWith configuration: WKWebViewConfiguration,
+                 for navigationAction: WKNavigationAction,
+                 windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil, let targetURL = navigationAction.request.url {
+            webView.load(URLRequest(url: targetURL))
+        }
+        return nil
     }
 
 }
