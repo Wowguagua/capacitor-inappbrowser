@@ -42,18 +42,18 @@ final class InAppBrowserViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
 
         let headerView = UIView()
         headerView.translatesAutoresizingMaskIntoConstraints = false
-        headerView.backgroundColor = .systemBackground
+        headerView.backgroundColor = .white
 
         let titleLabel = UILabel()
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.text = titleText
         titleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
         titleLabel.textAlignment = .center
-        titleLabel.textColor = .label
+        titleLabel.textColor = UIColor(red: 36.0 / 255.0, green: 40.0 / 255.0, blue: 40.0 / 255.0, alpha: 1)
         titleLabel.lineBreakMode = .byTruncatingTail
 
         let closeButton = UIButton(type: .system)
@@ -62,7 +62,12 @@ final class InAppBrowserViewController: UIViewController {
         closeButton.imageView?.contentMode = .scaleAspectFit
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
 
+        webView.backgroundColor = .white
         webView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 11.0, *) {
+            // Prevent automatic safe-area insets from creating extra scroll space.
+            webView.scrollView.contentInsetAdjustmentBehavior = .never
+        }
 
         view.addSubview(headerView)
         headerView.addSubview(titleLabel)
