@@ -10,6 +10,10 @@ export class InAppBrowserWeb extends WebPlugin implements InAppBrowserPlugin {
 
   async openInAppBrowser(options: OpenInAppBrowserOptions): Promise<void> {
     console.log('OPEN IN APP BROWSER', options);
+    if(!options.url) {
+      throw new Error('url is required');
+    }
+    window.open(options.url, '_blank');
     return;
   }
 }
