@@ -61,3 +61,27 @@ openInAppBrowser(options: OpenInAppBrowserOptions) => Promise<void>
 | **`title`** | <code>string</code> |
 
 </docgen-api>
+
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+## Configuration
+
+These config values are available:
+
+| Prop        | Type                | Default
+| ----------- | ------------------- | -------
+| **`headerTextColor`**   | <code>string</code> | <code>#242828</code>
+| **`progressBarColor`** | <code>string</code> | <code>#007AFF</code>
+
+### Examples
+
+In `capacitor.config.json`:
+
+```json
+{
+  "plugins": {
+    "InAppBrowser": {
+      "headerTextColor": "#242828",
+      "progressBarColor": "#007AFF"
+    }
+  }
+}

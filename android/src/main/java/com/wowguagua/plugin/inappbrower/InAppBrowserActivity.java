@@ -1,6 +1,8 @@
 package com.wowguagua.plugin.inappbrower;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -12,9 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.getcapacitor.PluginConfig;
+
 public class InAppBrowserActivity extends Activity {
     public static final String EXTRA_URL = "InAppBrowserUrl";
     public static final String EXTRA_TITLE = "InAppBrowserTitle";
+    public static final String EXTRA_HEADER_TEXT_COLOR = "InAppBrowserHeaderTextColor";
+    public static final String EXTRA_PROGRESS_BAR_COLOR = "InAppBrowserProgressBarColor";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +38,16 @@ public class InAppBrowserActivity extends Activity {
         TextView header = findViewById(R.id.in_app_browser_header);
         WebView webView = findViewById(R.id.in_app_browser_webview);
         ImageButton backButton = findViewById(R.id.in_app_browser_back);
-        View closeButton = findViewById(R.id.in_app_browser_close);
+        ImageButton closeButton = findViewById(R.id.in_app_browser_close);
         ProgressBar progressBar = findViewById(R.id.in_app_browser_progress);
+
+        String headerTextColor = getIntent().getStringExtra(EXTRA_HEADER_TEXT_COLOR);
+        String progressBarColor = getIntent().getStringExtra(EXTRA_PROGRESS_BAR_COLOR);
+
+        header.setTextColor(Color.parseColor(headerTextColor));
+        backButton.setColorFilter(Color.parseColor(headerTextColor));
+        closeButton.setColorFilter(Color.parseColor(headerTextColor));
+        progressBar.getProgressDrawable().setColorFilter(Color.parseColor(progressBarColor), PorterDuff.Mode.SRC_IN);
 
         Uri uri = Uri.parse(url);
         String host = uri.getHost();

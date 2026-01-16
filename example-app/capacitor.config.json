@@ -5,6 +5,10 @@
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": false
+    },
+    "InAppBrowser": {
+      "headerTextColor": "#FF0000",
+      "progressBarColor": "#00FF00"
     }
   }
 }

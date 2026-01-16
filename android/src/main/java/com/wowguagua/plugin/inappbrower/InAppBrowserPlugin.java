@@ -1,6 +1,7 @@
 package com.wowguagua.plugin.inappbrower;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -28,7 +29,7 @@ public class InAppBrowserPlugin extends Plugin {
             call.reject("Must provide a url");
             return;
         }
-        implementation.openInAppBrowser(getContext(), url, title);
+        implementation.openInAppBrowser(getContext(), getConfig(), url, title);
         call.resolve();
     }
 }
