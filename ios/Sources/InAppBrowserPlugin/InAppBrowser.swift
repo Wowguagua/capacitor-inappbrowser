@@ -1,4 +1,5 @@
 import Foundation
+import Capacitor
 import UIKit
 import WebKit
 
@@ -8,7 +9,7 @@ import WebKit
         return value
     }
 
-    @objc public func openInAppBrowser(_ url: String, _ title: String, _ presentingViewController: UIViewController) {
+    @objc public func openInAppBrowser(_ url: String, _ title: String, _ presentingViewController: UIViewController, _ config: PluginConfig) {
         print("openInAppBrowser: \(url), \(title)")
         guard let targetURL = URL(string: url) else {
             print("openInAppBrowser: invalid url")
@@ -16,7 +17,7 @@ import WebKit
         }
 
         DispatchQueue.main.async {
-            let browserViewController = InAppBrowserViewController(url: targetURL, titleText: title)
+            let browserViewController = InAppBrowserViewController(url: targetURL, titleText: title, config: config)
             browserViewController.modalPresentationStyle = .fullScreen
             browserViewController.modalTransitionStyle = .coverVertical
             presentingViewController.present(browserViewController, animated: true)
@@ -28,15 +29,19 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
     private static let textColor = UIColor(red: 36.0 / 255.0, green: 40.0 / 255.0, blue: 40.0 / 255.0, alpha: 1)
     private let url: URL
     private let titleText: String
+    private let headerTextColor: String
+    private let progressBarColor: String
     private let webView = WKWebView(frame: .zero)
     private let backButton = UIButton(type: .system)
     private var canGoBackObservation: NSKeyValueObservation?
     private let progressView = UIProgressView(progressViewStyle: .bar)
     private var progressObservation: NSKeyValueObservation?
 
-    init(url: URL, titleText: String) {
+    init(url: URL, titleText: String, config: PluginConfig) {
         self.url = url
         self.titleText = titleText
+        self.headerTextColor = config.getString("headerTextColor") ?? "#242828"
+        self.progressBarColor = config.getString("progressBarColor") ?? "#007AFF"
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -48,6 +53,9 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+ 
+        let resolvedHeaderTextColor = UIColor(hexString: headerTextColor) ?? Self.textColor
+        let resolvedProgressBarColor = UIColor(hexString: progressBarColor) ?? .systemBlue
 
         let headerView = UIView()
         headerView.translatesAutoresizingMaskIntoConstraints = false
@@ -58,14 +66,14 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
         titleLabel.text = titleText
         titleLabel.font = .systemFont(ofSize: 17, weight: .semibold)
         titleLabel.textAlignment = .center
-        titleLabel.textColor = Self.textColor
+        titleLabel.textColor = resolvedHeaderTextColor
         titleLabel.lineBreakMode = .byTruncatingTail
 
         backButton.translatesAutoresizingMaskIntoConstraints = false
         let backSymbolConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .regular)
         let backSymbol = UIImage(systemName: "chevron.left", withConfiguration: backSymbolConfig)
         backButton.setImage(backSymbol, for: .normal)
-        backButton.tintColor = Self.textColor
+        backButton.tintColor = resolvedHeaderTextColor
         backButton.imageView?.contentMode = .scaleAspectFit
         backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
         backButton.isHidden = true
@@ -75,7 +83,7 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
         let closeSymbolConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .regular)
         let closeSymbol = UIImage(systemName: "xmark", withConfiguration: closeSymbolConfig)
         closeButton.setImage(closeSymbol, for: .normal)
-        closeButton.tintColor = Self.textColor
+        closeButton.tintColor = resolvedHeaderTextColor
         closeButton.imageView?.contentMode = .scaleAspectFit
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
 
@@ -94,6 +102,7 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
         progressView.translatesAutoresizingMaskIntoConstraints = false
         progressView.trackTintColor = .clear
         progressView.progress = 0
+        progressView.progressTintColor = resolvedProgressBarColor
         progressView.isHidden = true
         progressObservation = webView.observe(\.estimatedProgress, options: [.new]) { [weak self] webView, _ in
             self?.updateProgress(Float(webView.estimatedProgress))
@@ -182,4 +191,34 @@ final class InAppBrowserViewController: UIViewController, WKNavigationDelegate, 
         return nil
     }
 
+}
+
+private extension UIColor {
+    convenience init?(hexString: String) {
+        var cleaned = hexString.trimmingCharacters(in: .whitespacesAndNewlines)
+        if cleaned.hasPrefix("#") {
+            cleaned.removeFirst()
+        }
+
+        let length = cleaned.count
+        guard length == 6 || length == 8 else { return nil }
+
+        var hexValue: UInt64 = 0
+        guard Scanner(string: cleaned).scanHexInt64(&hexValue) else { return nil }
+
+        let r, g, b, a: CGFloat
+        if length == 8 {
+            r = CGFloat((hexValue & 0xFF000000) >> 24) / 255.0
+            g = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
+            b = CGFloat((hexValue & 0x0000FF00) >> 8) / 255.0
+            a = CGFloat(hexValue & 0x000000FF) / 255.0
+        } else {
+            r = CGFloat((hexValue & 0xFF0000) >> 16) / 255.0
+            g = CGFloat((hexValue & 0x00FF00) >> 8) / 255.0
+            b = CGFloat(hexValue & 0x0000FF) / 255.0
+            a = 1.0
+        }
+
+        self.init(red: r, green: g, blue: b, alpha: a)
+    }
 }

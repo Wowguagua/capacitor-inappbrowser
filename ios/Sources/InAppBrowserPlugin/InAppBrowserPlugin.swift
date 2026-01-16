@@ -33,7 +33,8 @@ public class InAppBrowserPlugin: CAPPlugin, CAPBridgedPlugin {
             call.reject("presenting view controller is not available")
             return
         }
-        implementation.openInAppBrowser(url, title, presentingViewController)
+        
+        implementation.openInAppBrowser(url, title, presentingViewController, getConfig())
         call.resolve()
     }
 }
